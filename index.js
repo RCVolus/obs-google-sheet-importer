@@ -56,4 +56,7 @@ const main = async () => {
   updateWrapped();
 }
 
-main();
+main().catch(e => {
+  console.log("EXECUTION ERROR:");
+  console.log(e);
+});
