@@ -15,7 +15,7 @@ const loadData = async () => {
     pages[title] = entries;
   }
   
-  console.log(`Pages loaded: ${Object.keys(pages).join(', ')}`);
+  console.log(`============= Pages loaded: ${Object.keys(pages).join(', ')}`);
   return pages;
 }
 

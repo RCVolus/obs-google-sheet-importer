@@ -3,12 +3,26 @@ const OBSWebSocket = require('obs-websocket-js');
 const sheetLoader = require('./sheet-loader');
 const config = require('./config.json');
 
+const getChildren = sources => {
+  let items = sources;
+  sources.forEach(source => {
+    if (source.type === 'group') {
+      items = items.concat(getChildren(source.groupChildren));
+    }
+  });
+  return items;
+}
+
 const update = async (obs) => {
   const data = await sheetLoader.loadData();
 
   const sceneList = await obs.send('GetSceneList');
-  sceneList.scenes.forEach(scene => {
-    scene.sources.forEach(source => {
+  await sceneList.scenes.forEach(async scene => {
+    // unfold group children
+    const allSources = getChildren(scene.sources);
+
+    // console.log(scene);
+    await allSources.forEach(async source => {
       if (source.name.includes('|sheet')) {
         const reference = source.name.split('|sheet')[1].trim();
 
@@ -23,12 +37,37 @@ const update = async (obs) => {
 
             if (filteredFields.length > 0) {
               const field = filteredFields[0];
-              const fieldContent = field.content.$t;
+              let fieldContent = field.content.$t;
+              let color = null;
+
+              if (fieldContent.startsWith('?color')) {
+                const split = fieldContent.split(';');
+                fieldContent = split[1];
+                color = split[0].split('=')[1];
+                color = color.replace('#', 'ff');
+                color = parseInt(color, 16);
+              }
+
+              if (fieldContent.startsWith('?hide')) {
+                await obs.send("SetSceneItemRender", {
+                  'scene-name': scene.name,
+                  source: source.name,
+                  render: false
+                });
+              } else if (fieldContent.startsWith('?show')) {
+                await obs.send("SetSceneItemRender", {
+                  'scene-name': scene.name,
+                  source: source.name,
+                  render: true
+                });
+              }
+              
               
               // Update to OBS
-              obs.send("SetTextGDIPlusProperties", {
+              await obs.send("SetTextGDIPlusProperties", {
                 source: source.name,
-                text: fieldContent
+                text: fieldContent,
+                color: color
               });
               console.log(`Updated: ${reference} to OBS: ${source.name}`);
             } else {
@@ -50,7 +89,10 @@ const main = async () => {
   await obs.connect({ address: 'localhost:4444' });
   console.log('Connected to OBS!');
 
-  const updateWrapped = () => update(obs);
+  const updateWrapped = () => update(obs).catch(e => {
+    console.log("EXECUTION ERROR IN MAIN LOOP:");
+    console.log(e);
+  });
 
   setInterval(updateWrapped, config.polling);
   updateWrapped();
