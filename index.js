@@ -44,8 +44,11 @@ const update = async (obs) => {
                 const split = fieldContent.split(';');
                 fieldContent = split[1];
                 color = split[0].split('=')[1];
-                color = color.replace('#', 'ff');
-                color = parseInt(color, 16);
+                color = color.replace('#', '');
+                const color1 = color.substring(0, 2);
+                const color2 = color.substring(2, 4);
+                const color3 = color.substring(4, 6);
+                color = parseInt('ff' + color3 + color2 + color1, 16);
               }
 
               if (fieldContent.startsWith('?hide')) {
