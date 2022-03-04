@@ -20,7 +20,7 @@ const update = async (obs) => {
   await sceneList.scenes.forEach(async scene => {
     // unfold group children
     const allSources = getChildren(scene.sources);
-
+    console.log(allSources);
     // console.log(scene);
     await allSources.forEach(async source => {
       if (source.name.includes('|sheet')) {
