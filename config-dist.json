@@ -1,7 +1,7 @@
 {
-  "sheetId": "17LYOt9BQlTsJQRVfSK86hkx2rPsHnPI51z-ehaNSrM4",
+  "sheetId": "id",
   "tabname": "Sheet1",
-  "range": "A1:K10",
-  "apikey": "AIzaSyCj9YmsY_0lB7aEemVEGisj9IEY0FXSjG4",
+  "range": "A1:A1",
+  "apikey": "secretkey",
   "polling": 1000
 }
