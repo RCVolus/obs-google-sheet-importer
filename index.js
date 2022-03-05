@@ -20,14 +20,14 @@ const update = async (obs) => {
   const startcell = range.split(":")[0].trim();
 
   const startcol = startcell.match("[a-zA-Z]+");
-  console.log("starting column is " + startcol);
+  //console.log("starting column is " + startcol);
   const startrow = startcell.match("[0-9]+");
-  console.log("starting row is " + startrow);
+  //console.log("starting row is " + startrow);
 
   const rowoffset = startrow[0];
-  console.log("row offset to array is " + rowoffset);
+  //console.log("row offset to array is " + rowoffset);
   const coloffset = columnToNumber(startcol[0]);
-  console.log("colum offset to array is " + coloffset);
+  //console.log("colum offset to array is " + coloffset);
 
   const sceneList = await obs.send('GetSceneList');
   await sceneList.scenes.forEach(async scene => {
