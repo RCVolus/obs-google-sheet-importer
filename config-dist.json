@@ -2,6 +2,7 @@
   "sheetId": "id",
   "tabname": "Sheet1",
   "range": "A1:A1",
+  "dimension": "COLUMNS",
   "apikey": "secretkey",
   "polling": 1000
 }
