@@ -16,6 +16,19 @@ const getChildren = sources => {
 const update = async (obs) => {
   const data = await sheetLoader.loadData();
 
+  const range = config.range;
+  const startcell = range.split(":")[0].trim();
+
+  const startcol = startcell.match("[a-zA-Z]+");
+  //console.log("starting column is " + startcol);
+  const startrow = startcell.match("[0-9]+");
+  //console.log("starting row is " + startrow);
+
+  const rowoffset = startrow[0];
+  //console.log("row offset to array is " + rowoffset);
+  const coloffset = columnToNumber(startcol[0]);
+  //console.log("colum offset to array is " + coloffset);
+
   const sceneList = await obs.send('GetSceneList');
   await sceneList.scenes.forEach(async scene => {
     // unfold group children
@@ -26,23 +39,21 @@ const update = async (obs) => {
       if (source.name.includes('|sheet')) {
         const reference = source.name.split('|sheet')[1].trim();
 
-        if (reference.includes('/')) {
-          const pageTitle = reference.split('/')[0].trim();
-          const fieldTitle = reference.split('/')[1].trim();
+        let col = reference.match("[a-zA-Z]+");
+        let colnumber = columnToNumber(col[0]) - coloffset;
+        
+        let row = reference.match("[0-9]+");
+        let rownumber = row[0] - rowoffset;
 
-          const pageData = data[pageTitle];
-          
-          if (pageData) {
-            const filteredFields = pageData.filter(entry => entry.title.$t === fieldTitle);
+        let cellvalue = data[colnumber][rownumber];
+        console.log("Value for cell in source is " + cellvalue)
 
-            if (filteredFields.length > 0) {
-              const field = filteredFields[0];
-              let fieldContent = field.content.$t;
+            if (cellvalue.length > 0) {
               let color = null;
 
-              if (fieldContent.startsWith('?color')) {
-                const split = fieldContent.split(';');
-                fieldContent = split[1];
+              if (cellvalue.startsWith('?color')) {
+                const split = cellvalue.split(';');
+                cellvalue = split[1];
                 color = split[0].split('=')[1];
                 color = color.replace('#', '');
                 const color1 = color.substring(0, 2);
@@ -51,13 +62,13 @@ const update = async (obs) => {
                 color = parseInt('ff' + color3 + color2 + color1, 16);
               }
 
-              if (fieldContent.startsWith('?hide')) {
+              if (cellvalue.startsWith('?hide')) {
                 await obs.send("SetSceneItemRender", {
                   'scene-name': scene.name,
                   source: source.name,
                   render: false
                 });
-              } else if (fieldContent.startsWith('?show')) {
+              } else if (cellvalue.startsWith('?show')) {
                 await obs.send("SetSceneItemRender", {
                   'scene-name': scene.name,
                   source: source.name,
@@ -69,18 +80,12 @@ const update = async (obs) => {
               // Update to OBS
               await obs.send("SetTextGDIPlusProperties", {
                 source: source.name,
-                text: fieldContent,
+                text: cellvalue,
                 color: color
               });
               console.log(`Updated: ${reference} to OBS: ${source.name}`);
             } else {
-              console.log(`Unable to find field: ${fieldTitle} in ${pageTitle}`)
-            }
-          } else {
-            console.log(`Unable to find page: ${pageTitle}`);
-          }
-        } else {
-          console.log(`Missed the / in the reference: ${reference}`);
+              console.log(`Field is empty idk`)
         }
       }
     });
@@ -105,3 +110,11 @@ main().catch(e => {
   console.log("EXECUTION ERROR:");
   console.log(e);
 });
+
+function columnToNumber(str) {
+  var out = 0, len = str.length;
+  for (pos = 0; pos < len; pos++) {
+    out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - pos - 1);
+  }
+  return out-1;
+}
