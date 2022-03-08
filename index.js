@@ -94,7 +94,12 @@ const update = async (obs) => {
 
 const main = async () => {
   const obs = new OBSWebSocket();
-  await obs.connect({ address: 'localhost:4444' });
+  if (config.obsauth != "") {
+    await obs.connect({ address: config.obsaddress, password: config.obsauth });
+  }
+  else {
+    await obs.connect({ address: config.obsaddress });
+  }
   console.log('Connected to OBS!');
 
   const updateWrapped = () => update(obs).catch(e => {

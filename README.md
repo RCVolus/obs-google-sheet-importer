@@ -21,7 +21,9 @@ Open `config-dist.json` and set the following values:
 - tabname: The tab name where you need data from
 - range: The range of cells you need data from (in A1 notation, e.g. `D2:G7`)
 - apikey: Your Google Sheets API Key
-- polling: The frequency of updates in ms, defaults to once a second
+- obsaddress: The address of your OBS Websocket, default is localhost:4444 for local OBS instance
+- obsauth: The password configured in your OBS Websocket, leave empty for no authentication
+- polling: The frequency of updates in ms, defaults to 2000 (the google API maxes out at 1 request per second)
 - dimension: controls the major dimension in the API query, don't touch unless you know what you are doing
 
 Save the file as `config.json`

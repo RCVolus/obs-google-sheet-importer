@@ -4,5 +4,7 @@
   "range": "A1:A1",
   "dimension": "COLUMNS",
   "apikey": "secretkey",
-  "polling": 1000
+  "obsaddress": "localhost:4444",
+  "obsauth": "",
+  "polling": 2000
 }
