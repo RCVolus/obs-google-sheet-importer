@@ -4,7 +4,7 @@ This tool allows you to dynamically update content, color and visibility of text
 # Prerequisites
 - Node.js (tested on [16.7](https://nodejs.org/download/release/v16.7.0/node-v16.7.0-x64.msi))
 - [Google Sheets API Key](https://developers.google.com/sheets/api/guides/authorizing#APIKey)
-- [OBS Websocket](https://github.com/obsproject/obs-websocket)
+- [OBS >= 28.0](https://obsproject.com/)
 
 # Installation
 - Download the source
