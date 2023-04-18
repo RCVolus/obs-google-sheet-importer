@@ -1,4 +1,4 @@
-const OBSWebSocket = require('obs-websocket-js');
+const {default: OBSWebSocket} = require('obs-websocket-js');
 
 const sheetLoader = require('./sheet-loader');
 const config = require('./config.json');
@@ -20,24 +20,18 @@ const update = async (obs) => {
   const startcell = range.split(":")[0].trim();
 
   const startcol = startcell.match("[a-zA-Z]+");
-  //console.log("starting column is " + startcol);
   const startrow = startcell.match("[0-9]+");
-  //console.log("starting row is " + startrow);
 
   const rowoffset = startrow[0];
-  //console.log("row offset to array is " + rowoffset);
   const coloffset = columnToNumber(startcol[0]);
-  //console.log("colum offset to array is " + coloffset);
 
-  const sceneList = await obs.send('GetSceneList');
+  const sceneList = await obs.call('GetSceneList');
   await sceneList.scenes.forEach(async scene => {
     // unfold group children
-    const allSources = getChildren(scene.sources);
-
-    // console.log(scene);
-    await allSources.forEach(async source => {
-      if (source.name.includes('|sheet')) {
-        const reference = source.name.split('|sheet')[1].trim();
+    const allSources = await obs.call('GetSceneItemList', {sceneName: scene.sceneName});
+    await allSources.sceneItems.forEach(async source => {
+      if (source.sourceName.includes('|sheet') && source.inputKind.includes('gdiplus')) {
+        const reference = source.sourceName.split('|sheet')[1].trim();
 
         let col = reference.match("[a-zA-Z]+");
         let colnumber = columnToNumber(col[0]) - coloffset;
@@ -46,9 +40,8 @@ const update = async (obs) => {
         let rownumber = row[0] - rowoffset;
 
         let cellvalue = data[colnumber][rownumber];
-        console.log("Value for cell in source is " + cellvalue)
 
-            if (cellvalue.length > 0) {
+            if (typeof cellvalue !== 'undefined') {
               let color = null;
 
               if (cellvalue.startsWith('?color')) {
@@ -63,42 +56,47 @@ const update = async (obs) => {
               }
 
               if (cellvalue.startsWith('?hide')) {
-                await obs.send("SetSceneItemRender", {
-                  'scene-name': scene.name,
-                  source: source.name,
-                  render: false
+                const split = cellvalue.split(';');
+                cellvalue = split[1];
+                await obs.call("SetSceneItemEnabled", {
+                  sceneName: scene.sceneName,
+                  sceneItemId: source.sceneItemId,
+                  sceneItemEnabled: false
                 });
               } else if (cellvalue.startsWith('?show')) {
-                await obs.send("SetSceneItemRender", {
-                  'scene-name': scene.name,
-                  source: source.name,
-                  render: true
+                const split = cellvalue.split(';');
+                cellvalue = split[1];
+                await obs.call("SetSceneItemEnabled", {
+                  sceneName: scene.sceneName,
+                  sceneItemId: source.sceneItemId,
+                  sceneItemEnabled: true
                 });
               }
               
-              
               // Update to OBS
-              await obs.send("SetTextGDIPlusProperties", {
-                source: source.name,
-                text: cellvalue,
-                color: color
+              await obs.call("SetInputSettings", {
+                inputName: source.sourceName,
+                inputSettings: {
+                  text: cellvalue,
+                  color: color
+                }
               });
-              console.log(`Updated: ${reference} to OBS: ${source.name}`);
+              console.log(`Updated: ${reference} to OBS: ${source.sourceName}`);
             } else {
-              console.log(`Field is empty idk`)
+              console.log(`Field ${reference} is empty`)
         }
       }
-    });
+    });  
   });
 }
 
 const main = async () => {
   const obs = new OBSWebSocket();
   if (config.obsauth != "") {
-    await obs.connect({ address: config.obsaddress, password: config.obsauth });
+    await obs.connect(config.obsaddress, config.obsauth);
   }
   else {
-    await obs.connect({ address: config.obsaddress });
+    await obs.connect(config.obsaddress);
   }
   console.log('Connected to OBS!');
 
