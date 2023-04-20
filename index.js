@@ -41,7 +41,7 @@ const update = async (obs) => {
 
         let cellvalue = data[colnumber][rownumber];
 
-            if (typeof cellvalue !== 'undefined') {
+            if (cellvalue !== 'undefined') {
               let color = null;
 
               if (cellvalue.startsWith('?color')) {
