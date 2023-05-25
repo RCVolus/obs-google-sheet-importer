@@ -13,8 +13,12 @@ This tool allows you to dynamically update content, color and visibility of text
 - Run install.bat
 
 # Usage
+
 ## Spreadsheet
 The source spreadsheet needs to be set to allow anyone with the link to view, otherwise the API connection doesn't work.
+
+## OBS Setup
+Make sure the Websocket is enabled (`Tools -> WebSocket Server Settings -> Enable WebSocket Server`), take not of the settings (Port and Password)
 
 ## Configuration
 Open `config-dist.json` and set the following values:
