@@ -51,5 +51,5 @@ Any #hexcode in a cell is set as the color in the source. Empty cells are not up
 ## Controlling Browser Sources
 Any URL in a cell is set as the webpage in the source. Empty cells are not updated.
 
-## Controlling Visability Only
+## Controlling Visibility Only
 Any "hide"/"show" in a cell is set as the sources visability. Empty cells are not updated.
