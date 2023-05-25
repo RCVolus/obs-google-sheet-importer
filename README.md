@@ -35,8 +35,8 @@ Save the file as `config.json`
 
 ## OBS Setup
 To enable an OBS source to be controlled via the sheet, name the source in this format: `[Arbitrary Source Name] |sheet [Row #]`
-
 For example, `Text Source 1 |sheet 5` would be controlled by the contents of Row 5.
+**The tool does not work with groups. Using groups is not recommended in general, use nested scenes instead**
 
 ## Controlling Text Sources
 ### Setting Text
