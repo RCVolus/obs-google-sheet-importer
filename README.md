@@ -1,6 +1,8 @@
 # OBS Google Sheet Importer
 This tool allows you to dynamically update content, color and visibility of text sources in OBS through a google sheet.
 
+## For a version with additional features (managing image, color, and browser sources in addition to text), [check out this fork](https://github.com/DaBenjamins/obs-google-sheet-importer/tree/New-Features) by  [DaBenjamins](https://github.com/DaBenjamins)
+
 # Prerequisites
 - Node.js (tested on [16.7](https://nodejs.org/download/release/v16.7.0/node-v16.7.0-x64.msi))
 - [Google Sheets API Key](https://developers.google.com/sheets/api/guides/authorizing#APIKey)
